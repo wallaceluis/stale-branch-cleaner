@@ -1,0 +1,41 @@
+name: Stale Branch Cleaner
+description: Delete inactive branches that have no open pull request
+author: Wallace Luis
+
+branding:
+  icon: scissors
+  color: red
+
+inputs:
+  github-token:
+    description: Token used to read branches and pull requests and to delete branches. Needs `contents: write` and `pull-requests: read`.
+    required: false
+    default: ${{ github.token }}
+  days-inactive:
+    description: Number of days without commits after which a branch is considered stale.
+    required: false
+    default: "90"
+  protected-branches:
+    description: Comma or newline separated list of branch names or glob patterns that are never deleted. The default branch and protected branches are always kept.
+    required: false
+    default: "main,master,develop,release/*"
+  dry-run:
+    description: When "true", only report the branches that would be deleted.
+    required: false
+    default: "true"
+  max-deletions:
+    description: Maximum number of branches deleted in a single run (oldest first).
+    required: false
+    default: "50"
+
+outputs:
+  stale-branches:
+    description: JSON array with the names of the stale branches selected in this run.
+  deleted-branches:
+    description: JSON array with the names of the branches that were deleted.
+  deleted-count:
+    description: Number of branches deleted.
+
+runs:
+  using: node24
+  main: dist/index.js

@@ -1,0 +1,18 @@
+# Report-only setup: lists stale branches in the job summary and never deletes anything.
+name: Stale branches report
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wallaceluis/stale-branch-cleaner@v1
+        with:
+          days-inactive: 30
+          dry-run: true

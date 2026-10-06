@@ -1,0 +1,37 @@
+# Copy this file to .github/workflows/cleanup-branches.yml
+name: Cleanup stale branches
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # every Monday at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Only report, do not delete
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # delete branches
+  pull-requests: read # check for open pull requests
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete stale branches
+        id: cleanup
+        uses: wallaceluis/stale-branch-cleaner@v1
+        with:
+          days-inactive: 60
+          protected-branches: |
+            main
+            develop
+            release/*
+            hotfix/*
+          # Scheduled runs delete; manual runs follow the checkbox
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          max-deletions: 25
+
+      - name: Report
+        run: echo "Deleted ${{ steps.cleanup.outputs.deleted-count }} branches"
