@@ -1,0 +1,29 @@
+{
+  "name": "stale-branch-cleaner",
+  "version": "1.0.0",
+  "description": "GitHub Action that deletes inactive branches with no open pull request",
+  "license": "MIT",
+  "author": "Wallace Luis",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/main.ts -o dist --license licenses.txt",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test src/cleanup.test.ts",
+    "all": "npm run typecheck && npm test && npm run build"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@vercel/ncc": "^0.45.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
