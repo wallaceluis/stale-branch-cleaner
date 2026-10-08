@@ -10,7 +10,7 @@
   "scripts": {
     "build": "ncc build src/main.ts -o dist --license licenses.txt",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/cleanup.test.ts",
+    "test": "node --import tsx --test src/*.test.ts",
     "all": "npm run typecheck && npm test && npm run build"
   },
   "engines": {

@@ -1,5 +1,7 @@
 # Stale Branch Cleaner
 
+[![CI](https://github.com/wallaceluis/stale-branch-cleaner/actions/workflows/ci.yml/badge.svg)](https://github.com/wallaceluis/stale-branch-cleaner/actions/workflows/ci.yml)
+
 A GitHub Action that deletes branches with no recent commits and no open pull request.
 
 It is **safe by default**: it runs in dry-run mode until you turn it off, never touches the default branch or protected branches, and caps how many branches it deletes per run.
@@ -106,13 +108,16 @@ npm test
 npm run build   # bundles src/ into dist/ with ncc
 ```
 
-`dist/` is committed because GitHub runs the action straight from the repository. Rebuild and commit it whenever `src/` changes.
+`dist/` is committed because GitHub runs the action straight from the repository. Rebuild and commit it whenever `src/` changes; CI fails if `dist/` does not match the source.
+
+CI also runs the action itself from the checkout (`uses: ./`) against this repository in dry-run mode, so every change is exercised on the real GitHub API before release.
 
 | File             | Responsibility                                               |
 | ---------------- | ------------------------------------------------------------ |
 | `src/main.ts`    | Reads inputs, orchestrates the run, sets outputs and summary |
 | `src/github.ts`  | GitHub API calls (GraphQL + REST)                            |
 | `src/cleanup.ts` | Pure logic that decides which branches are stale             |
+| `src/*.test.ts`  | Unit tests: classification rules and the API layer (fake Octokit) |
 
 ### Releasing
 

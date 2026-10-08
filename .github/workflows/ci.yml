@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      # The action runs from the committed bundle, so it must match the source.
+      - name: Check dist/ is up to date
+        run: |
+          if ! git diff --quiet -- dist; then
+            echo "::error::dist/ is out of date. Run 'npm run build' and commit the result."
+            git diff --stat -- dist
+            exit 1
+          fi
+
+  # Runs the action from this checkout against this repository, in dry-run.
+  self-test:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - id: cleaner
+        uses: ./
+        with:
+          days-inactive: 1
+          dry-run: true
+      - name: Check outputs
+        run: |
+          echo "stale:   ${{ steps.cleaner.outputs.stale-branches }}"
+          echo "deleted: ${{ steps.cleaner.outputs.deleted-count }}"
+          test "${{ steps.cleaner.outputs.deleted-count }}" = "0"
