@@ -18,6 +18,8 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      - name: Validate action.yml
+        run: python3 -c "import yaml; yaml.safe_load(open('action.yml'))"
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
